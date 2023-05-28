@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="../static/Logo.png" type="image/x-icon">
+
+</head>
+<body>
+    <style>
+.profile-link {
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.p{
+    display: flex;
+}
+
+.profile-img {
+  width: 50px; 
+  height: 50px; 
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.footer{
+  margin: 0;
+  height: 50px;
+  padding-top: 25px;
+}
+.footer p{
+  text-align: center;
+  /* margin-top: 30px; */
+  font-size: 15px;
+  color: gray;
+}
+
+.conta{
+  height: 100%;
+}
+.text{
+    width: 800px;
+    margin: auto;
+}
+.pa{
+  width: 800px;
+  margin: auto;
+}
+    </style>
+         
+        <nav class="navbar bg-body-tertiary navbar-expand-lg navbar-dark bg-dark bg-body-tertiary">
+            <div class="container-fluid">
+            <li class="nav-item navbar-nav">
+              <a class="navbar-brand"><img src="../static/Logo.png" height="50px" alt=""></a>
+            </li>
+            <li class="nav-item navbar-nav">
+              <a class="nav-link" href="{{ url_for('feed') }}">Feed</a>
+            </li>
+            <li class="nav-item navbar-nav">
+              <a class="nav-link" href="{{ url_for('profile', username=current_user.username) }}">Mi perfil</a>
+            </li>
+            <li class="nav-item navbar-nav">
+              <a class="nav-link" href="{{ url_for('config') }}">Configuración</a>
+            </li>
+            <li class="nav-item navbar-nav">
+              <a href="{{ url_for('create_post') }}" class="btn btn-success">Crear publicacion</a>
+            </li>
+            <li class="nav-item navbar-nav">
+              <a href="{{ url_for('users_messaged') }}" class="btn btn-success">Mensajes</a>
+            </li>
+              <form class="d-flex" role="search" method="POST" action="{{ url_for('search') }}">
+                <input class="form-control me-2" type="search" name="search_query" placeholder="Buscar usuario" aria-label="Search" style="background-color: transparent;">
+                <button class="btn btn-outline-success" type="submit">Buscar</button>
+              </form>
+            </div>
+          </nav>
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-info">
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% block contenido %}
+        <h1 class="mt-4">Feed</h1>
+       
+
+        <div class="mt-4">
+            {% for post in posts %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <a href="{{ url_for('profile', username=post.user.username) }}" class="btn">
+                        <img src="{{ url_for('static', filename='profile_pictures/' + (post.user.profile_picture or '')) }}" alt="Foto de perfil" class="profile-img">
+                        <h5 class="card-title">{{ post.user.username }}</h5>
+                        {% if current_user != post.user %}
+                        {% if current_user.is_following(post.user) %}
+                        <a href="{{ url_for('unfollow', user_id=post.user.id) }}" class="btn btn-danger">Dejar de Seguir</a>
+                        {% else %}
+                        <a href="{{ url_for('follow', user_id=post.user.id) }}" class="btn btn-primary">Seguir</a>
+                        {% endif %}
+                        {% endif %}
+                    </a>
+                   
+                    <p class="card-text">{{ post.content }}</p>
+                    {% if post.photo %}
+                    <img src="{{ url_for('static', filename='profile_pictures/' + post.photo) }}" alt="Foto de la publicación" class="img" width="100%" height="500px" style="border-radius: 8px; margin: 10px;">
+                    {% endif %}
+                    <p>{{ post.likes_count }} Me gusta</p>
+    
+                    {% if current_user.is_authenticated %}
+                      {% if post.is_liked_by(current_user) %}
+                        <form action="{{ url_for('unlike', post_id=post.id) }}" method="post">
+                          <button type="submit" class="btn btn-danger">Quitar Me gusta</button>
+                        </form>
+                      {% else %}
+                        <form action="{{ url_for('like', post_id=post.id) }}" method="post">
+                          <button type="submit" class="btn btn-success">Dar Me gusta</button>
+                        </form>
+                      {% endif %}
+                    {% endif %}
+                    <!-- Mostrar los comentarios -->
+                    <h2>Comentarios</h2>
+                    {% for comment in post.comments %}
+                    <div class="comment">
+                      <p>{{ comment.text }}</p>
+                      <p>Por: {{ comment.user.username }}</p>
+                      {% if current_user == comment.user %}
+                      <form action="{{ url_for('eliminar_comentario', post_id=post.id, comment_id=comment.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger">Eliminar comentario</button>
+                      </form>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                  
+                  <!-- Formulario para agregar un nuevo comentario -->
+                  <h2>Agregar comentario</h2>
+                  <form action="{{ url_for('agregar_comentario', post_id=post.id) }}" method="POST">
+                    <input type="text" name="comment_text" class="form-control" required>
+                    <button type="submit" class="btn btn-success" style="margin: 5px;">Enviar comentario</button>
+                  </form>
+                    <h6>{{ post.timestamp }}</h6>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endblock contenido %}
+    </div>
+    <footer class="footer bg-dark">
+      <div class="container-fluid"> 
+        <p>&copy; 2023 Equipo de desarrolladores de FriendLink</p>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
