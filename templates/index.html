@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="../static/Logo.png" type="image/x-icon">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>FriendLink</title>
+</head>
+
+<body>
+  <nav class="navbar bg-body-tertiary navbar-expand-lg navbar-dark bg-dark bg-body-tertiary">
+    <div class="container-fluid">
+      <li class="nav-item navbar-nav">
+        <a class="navbar-brand"><img src="../static/Logo.png" height="50px" alt=""></a>
+      </li>
+
+      <li class="nav-item navbar-nav">
+        <a href="{{ url_for('login') }}" class="btn btn-secondary" style="margin: 5px;">Iniciar secion</a>
+        <a href="{{ url_for('register') }}" class="btn btn-primary" style="margin: 5px;">Registrate</a>
+      </li>
+    </div>
+  </nav>
+  <header class="header bg-body-tertiary" style="background-image: url(../static/img-index/feed.png);background-attachment: fixed;background-repeat: no-repeat;background-position: center;">
+    <div class="container-fluid" style="background-color: #333333c7;height: 89.9vh;">
+      <div class="cont pt-5">
+        <div class="cont pt-5">
+          <!-- <div class="cont pt-5"> -->
+            <div class="titulo text-center mt-5" style="color: #fff;">
+              <img src="../static/img-index/FriendLink.gif" alt="Logo" width="200px" style="border-radius: 50%;">
+              <h1>¡Bienvenid@s a FriendLink!</h1>
+            </div>
+          <!-- </div> -->
+        </div>
+      </div>
+      <div class="pt-5 text-center">
+        <a href="/register" class="btn btn-secondary">Registrate</a>
+      </div>
+    </div>
+  </header>
+</body>
+
+</html>
